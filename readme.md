@@ -265,11 +265,9 @@ In your computer, open terminal or command prompt:
 
 - Clone this repository using `git clone https://github.com/ellenpham/API_Webserver_LocalTourBookingWebApp`
 
-- Change the directory to the `src` folder using `cd ./MyPham_T2A2/src`
+- Change the directory to the `src` folder using `cd ./API_Webserver_LocalTourBookingWebApp/src`
 
-- To activate the virtual environment, use the following command `source .venv/bin/activate`
-
-- If `.venv` does not exist, follow the below commands to set up the virtual environment:
+- Create virtual environment an activate it using the following commands:
 
     ```    
     python3 -m venv .venv
@@ -278,7 +276,7 @@ In your computer, open terminal or command prompt:
 
 - Install the dependencies, using `pip3 install -r requirements.txt`
 
-- In another terminal window, start your PostgresSQL service and run `psql` to access the database management system. Create database in your PostgresSQL by following the configuration in the `.env` folder to set up the database URL and JWT
+- In another terminal window, start your PostgresSQL service and run `psql` to access the database management system. Create database in your PostgresSQL by following the configuration in the `.env` folder to set up the database URL and JWT.
 
 - To create the initial database for API testing run the following CLI commands in order: `flask db drop`, `flask db create`, `flask db seed`
 
