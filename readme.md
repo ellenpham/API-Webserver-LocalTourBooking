@@ -349,4 +349,159 @@ In this application Flask-JWT-extended is the library used to add support for us
 
 In this application, models are created using SQLAlchemy, they reflect the entities in the database and are treated like Python classes. There are five models: `UserRole`, `User`, `Tour`, `TourBooking` and `Review`.
 
-**UserRole model**
+### UserRole model
+
+The `UserRole` model is associated with the `roles` table in the database. The relationship with `User` model is one-to-many relationship. 
+
+The association is established using the below code:
+
+In `role.py`, the `users` variable in `role.py` has `cascade='all,delete'` constraint, because a user must have a role, if a role is deleted, no associated users should exist. 
+
+The `relationship.back_populates` parameter is used to establish a bidirectional relationship in one-to-many relationship, where the "reverse" side is a many-to-one.
+
+```
+users = db.relationship('User', back_populates = 'role', cascade ='all, delete')
+```
+
+In `user.py`:
+
+```
+role = db.relationship('UserRole', back_populates='users')
+```
+
+Schemas are nested to represent the relationship between objects. The reason to use nesting schemas here is because a user can either be admin, tourist or tour guide, therefore, we want to see the user role when a user is returned in the response. Nesting schemas are defined to represent this relationship as below:
+
+
+In `role.py`, `role` is excluded to prevent circular references.
+
+```
+users = fields.List(fields.Nested('UserSchema', exclude=['role']))
+```
+
+In `user.py`, we only need the `name` attribute when nested in the user object.
+
+```
+role = fields.Nested('UserRoleSchema', only=['name'])
+```
+
+### User model
+
+This application encourages the self-operated interaction between users. Hence, `users` is the main entity and `User` model is the centre model, all other models are associated to `User` model by some means. 
+
+**Relationship with UserRole model**
+
+This relationship is one-to-many as discussed above, `role_id` in `User` model is the foreign key, referencing the `id` of the `UserRole` model and it is not nullable, because a user must be associated with a role for applying authorisation based on the user role later on. 
+
+In `user.py`:
+
+```
+role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
+```
+
+
+**Relationship with Tour model**
+
+This relationship is one-to-many relationship. `user_id` in `Tour` model is the foreign key, referencing the `id` of the `User` model and it is not nullable, because a tour must belong to a user (a user with tour guide role, to be more specific).
+
+In `tour.py`:
+
+```
+user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+```
+
+The association is established using the below code:
+
+In `user.py`, `cascade='all,delete` is the constraint of `tours` in `user.py` because once a user is deleted, all associated tours belong to that user will also be deleted. 
+
+```
+tours = db.relationship('Tour', back_populates='user', cascade='all, delete')
+```
+
+In `tour.py`:
+
+```
+user = db.relationship('User', back_populates='tours')
+```
+
+`TourSchema` is nested in `UserSchema` for when a user (specifically a tour guide) is returned in the response, their tours are stored in a list that nested in the user object. Nesting schemas are defined to represent this relationship as below:
+
+In `user.py`, `user` is excluded to prevent circular references.
+
+```
+tours = fields.List(fields.Nested('TourSchema', exclude=['user']))
+```
+
+In `tour.py`, we only need `username`, `email` and `role` attributes of the tour guide user to show up in the nested list of tours.
+
+```
+user = fields.Nested('UserSchema', only=['username', 'email', 'role'])
+```
+
+**Relationship with TourBooking model**
+
+This relationship is one-to-many relationship. `user_id` in `TourBooking` model is the foreign key, referencing the `id` of the `User` model and it is not nullable, because a tour booking must belong to a user (a user with tourist role, to be more specific).
+
+In `tour_booking.py`:
+
+```
+user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+```
+
+The association is established using the below code:
+
+In `user.py`, there is no `cascade='all,delete` constraint of `tour_bookings` in `user.py` as a feature of the application is assumed that a user cannot be deleted if there is still a existing tour booking linked to them. This associated tour booking needs to be deleted (or cancelled) for the user to be removed. 
+
+```
+tour_bookings = db.relationship('TourBooking', back_populates='user')
+```
+
+In `tour_booking.py`:
+
+```
+user = db.relationship('User', back_populates='tour_bookings')
+```
+
+`TourBookingSchema` is nested in `UserSchema` for when a user (specifically a tourist) is returned in the response, their tour bookings are stored in a list that nested in the user object. Nesting schemas are defined to represent this relationship as below:
+
+In `user.py`, `user` is excluded to prevent circular references.
+
+```
+tour_bookings = fields.List(fields.Nested('TourBookingSchema', exclude=['user']))
+```
+
+In `tour.py`, we only need `username`, `email` and `role` attributes of the tourist user to show up in the nested list of tour bookings.
+
+```
+user = fields.Nested('UserSchema', only=['username', 'email', 'role'])
+```
+
+**Relationship with Review model**
+
+This relationship is one-to-many relationship. `user_id` in `Review` model is the foreign key, referencing the `id` of the `User` model and it is not nullable, because a review must belong to a user (this application assumes that only tourist can write reviews).
+
+In `review.py`:
+
+```
+user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+```
+The association is established using the below code:
+
+In `user.py`, `cascade='all,delete` is the constraint of `reviews` in `user.py` because once a user is deleted, all associated reviews belong to that user will also be deleted. 
+
+```
+reviews = db.relationship('Review', back_populates='user', cascade='all, delete')
+```
+
+In `review.py`:
+
+```
+user = db.relationship('User', back_populates='reviews')
+```
+
+`UserSchema` is nested in `ReviewSchema` for when a review (specifically a tourist) is returned in the response, the info of user who wrote the review is nested in the review object. There is unnecessary for `ReviewSchema` to be nested in `UserSchema`.
+
+In `review.py`, the `user` variable defines the nesting `UserSchema` within `ReviewSchema`. Only two attributed `username` and `role` needed to show up in the review object to tell who is the review owner. 
+
+```
+user = fields.Nested('UserSchema', only=['username', 'role'])
+```
