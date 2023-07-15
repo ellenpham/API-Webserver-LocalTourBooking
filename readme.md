@@ -25,8 +25,9 @@ View user stories [here](docs/user_stories.md)
     - Register/Log in
     - Create/View/Update their own account with full privileges
     - Deactivate their own account
-    - View a tour guide account with limited access to information 
+    - View an active tour guide account with limited access to information 
     - View tours
+    - Create a booking to an available tour
     - Create/View/Update/Delete a tour booking with full privileges (assuming that the privilege to Delete complies with a cancellation policy based on mutual agreement)
     - Create/View/Update/Delete their own reviews with full privileges (can only review the tours they have booked)
     - View other tourists' reviews
@@ -38,9 +39,8 @@ View user stories [here](docs/user_stories.md)
     - Deactivate their own account
     - View a tourist account with limited access to information (only applied for tourists who have booked their tours)
     - Create/View/Update/Delete their own tours with full privileges (only can Delete a tour if it has not been booked)
-    - View tour bookings (only applied for their own tours)
+    - View tour bookings (only apply to the tour bookings of their own tours)
     - View tourists' reviews
-    - Nice-to-have: extra feature for tour guides to write reviews to tourists
 
 #### CRUD functionalities for admins
 - Admin account owner:
@@ -552,9 +552,7 @@ tour = fields.Nested('TourSchema', only=['user', 'tour_name'])
 
 ### Review Model
 
-The one-to-many relationship between `User` and `Review` has been discussed above. Similarly, from a different perspective, we can say that the relationship between `Review` and `User` is many-to-many relationship. And `Tour` is the model that joins the two models `Review` and `User`. 
-
-We will now discuss the relationship between `Review` and `Tour`. In this application, it is assumed that tourists are the reviewers and tours are the object to be reviewed. This relationship is one-to-many, a tour can have many reviews but one review can only belong to one tour. `tour_id` in `Review` model is the foreign key, referencing the `id` of the `Tour` model and it is not nullable, because a review must belong to a tour.
+The one-to-many relationship between `User` and `Review` has been discussed above. We will now discuss the relationship between `Review` and `Tour`. In this application, it is assumed that tourists are the reviewers and tours are the object to be reviewed. This relationship is one-to-many, a tour can have many reviews but one review can only belong to one tour. `tour_id` in `Review` model is the foreign key, referencing the `id` of the `Tour` model and it is not nullable, because a review must belong to a tour. 
 
 In `review.py`:
 
@@ -594,3 +592,148 @@ tour = fields.Nested('TourSchema', only=['tour_name', 'user'])
 
 <br>
 
+# Database relations
+
+There are five entities/tables involved in this application, namely `roles`, `users`, `tours`, `tour_bookings` and `reviews`.
+
+### `roles` 
+
+This entity has 2 attributes `id` and `name`. The datatype and constraints are listed as below:
+- `id`: serial, not null, primary key
+- `name`: string, not null
+
+Relationships with other entities:
+
+- `roles` and `users`: one-to-many relationship. One role can have zero to many users and one user can only have one and only one role. When a role is deleted, all the associated users will also be deleted.
+
+### `users` 
+
+This entity has 16 attributes. The datatype and constraints are listed as below:
+
+- `id`: serial, not null, primary key
+
+- `role_id`: integer, not null, foreign key (referencing `id` from the entity `roles` on `DELETE CASCADE`). 
+
+- `username`: string, not null, unique
+
+- `password`: string, not null
+
+- `email`: string, not null, unique
+
+- `date_created`: date, default is set as current date
+
+- `f_name`: string
+
+- `l_name`: string
+
+- `dob`: date
+
+- `gender`: string, must be one of the following values: male, female or others
+
+- `spoken_language`: string
+
+- `description`: text
+
+- `phone`: string, unique
+
+- `identity_doc_type`: string, must be one of the following values: passport, driver license or identity card
+
+- `identity_doc_ID`: string, unique
+
+- `is_active`: boolean
+
+Relationships with other entities:
+
+- `users` and `roles`: one-to-many relationship (as discussed above)
+
+- `users` and `tours`: one-to-many relationship. One user (tour guide) can have zero or many tours but one tour can only belong to one and only one user. Once an user is deleted, all associated tours will also be deleted.
+
+- `users` and `tour_bookings`: one-to-many relationship. One user (tourist) can have zero or many bookings but one booking can only belong to one and only one user. 
+
+- `users` and `reviews`: one-to-many relationship. One user (tourist) can have zero or many reviews but one review can only belong to one and only one user. Once a user is deleted, all associated reviews will also be deleted. 
+
+### `tours` 
+
+This entity has 11 attributes. The datatype and constraints are listed as below:
+
+- `id`: serial, not null, primary key
+
+- `user_id`: integer, not null, foreign key (referencing `id` from the entity `users` on `DELETE CASCADE`). 
+
+- `country`: string, not null
+
+- `tour_name`: string, not null
+
+- `description`: string, not null
+
+- `from_date`: date, not null
+
+- `to_date`: date, not null
+
+- `tourist_capacity`: string
+
+- `is_private`: boolean
+
+- `is_available`: boolean
+
+- `price`: float
+
+Relationships with other entities:
+
+- `tours` and `users`: one-to-many relationship (as discussed above). The relationship can also be many-to-many, many tours are created by many users. In this case, the joint table is `tour_bookings` or `reviews`.
+
+- `tours` and `tour_bookings`: one-to-many relationship. One tour can have zero to many bookings (if a tour is a public tour it can have many bookings). However, it is assumed that a tour cannot be deleted if there is still an existing booking that links to the tour. 
+
+- `tours` and `reviews`: one-to-many relationship. One tour can have zero to many reviews but a review must only belong to one and only one tour. Once a tour is deleted, all associated reviews will also be deleted. 
+
+### `tour_bookings`
+
+This entity has 6 attributes. The datatype and constraints are listed as below:
+
+- `id`: serial, not null, primary key
+
+- `user_id`: integer, not null, foreign key (referencing `id` from the entity `users`).
+
+- `tour_id`: integer, not null, foreign key (referencing `id` from the entity `tours`).
+
+- `tourist_number`: integer, not null
+
+- `preferred_language`: integer, not null
+
+- `extra_request`: text
+
+Relationships with other entities:
+
+- `tour_bookings` and `users`: one-to-many relationship (as discussed above). 
+
+- `tour_bookings` and `tours`: one-to-many relationship (as discussed above). `tour_bookings` is a join table between `users` and `tours` in their many-to-many relationship, therefore, it has two foreign keys `user_id` and `tour_id`. However, it is assumed that a tour booking must be cancelled/deleted for a tour or a user who owns the tour to be deleted. Hence, no `DELETE CASCADE` constraint is set on these foreign keys.
+
+### `reviews`
+
+This entity has 6 attributes. The datatype and constraints are listed as below:
+
+- `id`: serial, not null, primary key
+
+- `user_id`: integer, not null, foreign key (referencing `id` from the entity `users` on `DELETE CASCADE`).
+
+- `tour_id`: integer, not null, foreign key (referencing `id` from the entity `tours` on `DELETE CASCADE`).
+
+- `rating`: integer, not null
+
+- `message`: text, not null
+
+- `date_created`: date, default is set as current date
+
+Relationships with other entities:
+
+- `reviews` and `users`: one-to-many relationship (as discussed above). 
+
+- `reviews` and `tours`: one-to-many relationship (as discussed above). `reviews` is also another join table between `users` and `tours` in their many-to-many relationship, therefore, it also has two foreign keys `user_id` and `tour_id`. 
+
+<br>
+
+# Tasks planning and tracking
+
+View the description of the way tasks are allocated and tracked in the project [here](docs/tasks_tracking.md).
+
+Link to project management tool [Trello](https://trello.com/b/CRoqP48W/t2a2-api-webserver).
