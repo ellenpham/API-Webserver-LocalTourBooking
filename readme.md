@@ -2,7 +2,7 @@
 
 API Webserver Project: backend development using Python-Flask as web framework and PostgresSQL as database management system.
 
-[GitHub repository](https://github.com/ellenpham/T2A2_API_Webserver)
+[GitHub repository](https://github.com/ellenpham/API_Webserver_LocalTourBookingWebApp)
 
 The purpose of this application is to to provide an alternative to the traditional method of travel guide, which is usually provided through the service of travel agencies. This application creates a platform where tourists can find a local tour guide for their upcoming overseas trips and for self-employed tour guides to offer their tours to tourists all around the world without the need of a travel agency. All interactions and transactions between tourists and tour guides are 100% self-operating, the application only acts as a facilitating tool or a networking system. 
 
@@ -247,20 +247,52 @@ There are many available ORM tools for OOP languages, such as Django, SQLAlchemy
 
 # API endpoints documentation
 
-## Installation
+## App installation
 
 ### System prerequisites
 
 - Python Version 3x is required to run the application. If Python has not been installed in your computer, please download by following [this link](https://www.python.org/downloads/).
 
-- Git Setup is required to be able to clone the repo to your computer, follow [this link](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup) to set up Git. Alternatively, you can download zip file to your computer by going to my [GitHub repo](https://github.com/ellenpham/T2A2_API_Webserver), click into **Code**, then **Download ZIP**.
+- Git Setup is required to be able to clone the repo to your computer, follow [this link](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup) to set up Git. Alternatively, you can download zip file to your computer by going to my [GitHub repo](https://github.com/ellenpham/API_Webserver_LocalTourBookingWebApp), click into **Code**, then **Download ZIP**.
+
+- PostgresSQL is required for this applcation as database management system. If PostgresSQL has not been installed in your computer, please download and install by following [this link](https://www.postgresql.org/download/).
 
 ### Installation steps
 
-- In your computer, open terminal or command prompt:
-    - Change the directory to a folder where you want to download the app using `cd <directory>`
-    - Clone this repository using `git clone https://github.com/ellenpham/T2A2_API_Webserver`
-    - Change the directory to the src folder using `cd ./T2A2_API_Webserver/src` 
+In your computer, open terminal or command prompt:
+
+- Change the directory to a folder where you want to download the app using `cd <directory>`
+
+- Clone this repository using `git clone https://github.com/ellenpham/API_Webserver_LocalTourBookingWebApp`
+
+- Change the directory to the `src` folder using `cd ./MyPham_T2A2/src`
+
+- To activate the virtual environment, use the following command `source .venv/bin/activate`
+
+- If `.venv` does not exist, follow the below commands to set up the virtual environment:
+
+    ```    
+    python3 -m venv .venv
+    source .venv/bin/activate
+    ```
+
+- Install the dependencies, using `pip3 install -r requirements.txt`
+
+- In another terminal window, start your PostgresSQL service and run `psql` to access the database management system. Create database in your PostgresSQL by following the configuration in the `.env` folder to set up the database URL and JWT
+
+- To create the initial database for API testing run the following CLI commands in order: `flask db drop`, `flask db create`, `flask db seed`
+
+- Once the database is all set up, run the following SQL commands to check if the data has been seeded successfully:
+
+    ```
+        \c <db_name>
+        \dt
+        SELECT * FROM <table_name>
+    ```
+
+- Run the app using `flask run`
+
+- Open an API client, follow the API endpoints documentation to implement the test. 
 
 
 ## API client
