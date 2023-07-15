@@ -99,8 +99,9 @@ Rearrange cards in Trello for easier tracking, documentation for API endpoints a
 
 ![Day14](trello_screenshots/Day14.png)
 
+**Day15**: Complete R7 and R8 of the assignment requirements. Add an installation guideline. Add code enhancement for account owners to change password, username and email. Start on R9 and R10 of the assignment requirements. 
 
-
+![Day15](trello_screenshots/Day15.png)
 
 
 

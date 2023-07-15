@@ -42,7 +42,7 @@ class UserSchema(ma.Schema):
 
     # Username validation
     username = fields.String(required=True, validate=And(
-        Length(min=5, error="Username must have at least 5 characters."),
+        Length(min=2, error="Username must have at least 2 characters."),
         Regexp("^[a-zA-Z0-9_.-]+$", error="Username can contain only letters, numbers and the following special characters: dot(.), underscore (_) or dash (-)")
     ))
 

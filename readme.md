@@ -343,3 +343,10 @@ JSON Web Tokens (JWT) is the chosen authentication/authorization standard in thi
 
 In this application Flask-JWT-extended is the library used to add support for using JWT in Flask. It helps protecting routes and has many useful built-in features to make it easier for the Flask app to work with JWT. You will need the JWT secret key to use JWT in this application. 
 
+<br>
+
+# Project models
+
+In this application, models are created using SQLAlchemy, they reflect the entities in the database and are treated like Python classes. There are five models: `UserRole`, `User`, `Tour`, `TourBooking` and `Review`.
+
+**UserRole model**

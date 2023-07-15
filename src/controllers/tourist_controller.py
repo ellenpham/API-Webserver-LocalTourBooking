@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from init import db
+from init import db, bcrypt
 from models.user import User, UserSchema, user_schema
 from models.tour_booking import TourBooking, tour_bookings_schema
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -54,6 +54,10 @@ def update_tourist_account(user_id):
                 return {'error' : 'Only the account owner can update account.'}, 403
             
             # If the user is the account owner, update the database with data from the request
+            user.username = body_data.get('username') or user.username
+            if body_data.get('password'):
+                user.password=bcrypt.generate_password_hash(body_data.get('password')).decode('utf-8') or user.password
+            user.email = body_data.get('email') or user.email
             user.f_name = body_data.get('f_name') or user.f_name
             user.l_name = body_data.get('l_name') or user.l_name
             user.dob = body_data.get('dob') or user.dob

@@ -360,7 +360,7 @@ Once the related tour booking is deleted, the result is returned as below:
 - Authorization: None
 - Request body: required fields `username`, `email`, `password`, `role_id`
 - Data validation:
-    - `username` has to have a least 5 character and only special character dot `.`, underscore `_` and dash `-` are allowed.
+    - `username` has to have a least 2 character and only special character dot `.`, underscore `_` and dash `-` are allowed.
     - `email` must be a valid email.
     - `password` must have at least 5 characters and must contain at least one uppercase, one lowercase and on special character.
     - `role_id` must be one of the following integer value: `1` for Admin, `2` for Tourist and `3` for Tour Guide.
