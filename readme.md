@@ -327,9 +327,19 @@ Psycopg2 is used to create the database connection in a Flask app, it is the mos
 
 SQLAlchemy is a Python SQL toolkit and an Object Relational Mapper (ORM). It provides developers the full power and flexibility to access database access in relational databases. SQLAlchemy as an ORM is used to make queries and handle data using simple Python objects and methods. In this application, Flask-SQLAlchemy (version 3.0.5) is also installed. It is an extension for Flask, which provides methods and tools to interact with database in Flask apps through SQLAlchemy. It simplifies the use of SQLAlchemy with Flask by setting up objects and patterns to use those objects such as sessions tied to web requests, models and engines ([DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-use-flask-sqlalchemy-to-interact-with-databases-in-a-flask-application), [Flask-SQLAlchemy documentation](https://flask-sqlalchemy.palletsprojects.com/en/3.0.x/)).
 
-**bcrypt**
+**Marshmallow** (version 3.19.0)
 
+Marshmallow is an ORM framework-agnostic library. It is used for converting complex datatypes like objects, to and from primitive Python datatypes. When we get data from database and pass it to API using HTTP requests, our data needs to be serialized for it to be rendered to standard JSON format, and vice versa, when data is loaded from the request, it needs to be parsed or deserialized into Python datatypes to be processed at the backend. Marshmallow is the tool that do such tasks. Marshmallow schemas are used to validate input data, deserialize input data to app-level objects and serialize app-level objects to native Python datatypes ([Marshmallow documentation](https://marshmallow.readthedocs.io/en/stable/)).
 
-**Marshmallow**
+In this application, Flask-Marshmallow (version 0.15.0) and Marshmallow-SQLAlchemy (version 0.29.0) are also installed. They are integrated with each other to add additional features to Marshmallow and make the whole API work with Flask and SQLAlchemy ([Flask-Marshmallow documentaion](https://flask-marshmallow.readthedocs.io/en/latest/)).
 
-**Flask-JWT-extended**
+**bcrypt** (version 4.0.1)
+
+Bcrypt is a password hashing function, it is used for encrypting sensitive data and files in the database storage. In this application, Flask-Bcrypt (version 1.0.1) is also installed, it is the Flask extension for Bcrypt hashing utilities. Flask-Bcrypt uses the slow hashing technique, it is designed to be "de-optimized", which helps prevent brute force attacks, it is recommended for protecting sensitive data, such as passwords ([Flask-Bcrypt documentation](https://flask-bcrypt.readthedocs.io/en/1.0.1/)).
+
+**Flask-JWT-extended** (version 4.5.2)
+
+JSON Web Tokens (JWT) is the chosen authentication/authorization standard in this application. Once a user is registered with the app, every time they log in, they will be grant a token (can be expired or non-expired), it is used to verify the user's identity. The token is stored by the user and it is used for whenever the user needs to access their personal information or perform certain tasks within the app that only them being authorised to perform, unauthorised users will not be permitted. To use this token in API testing, simply copy and paste the generated token to the Bearer Token section in Postman and Insomnia following the API endpoints documentation.
+
+In this application Flask-JWT-extended is the library used to add support for using JWT in Flask. It helps protecting routes and has many useful built-in features to make it easier for the Flask app to work with JWT. You will need the JWT secret key to use JWT in this application. 
+
