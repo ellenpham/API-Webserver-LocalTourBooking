@@ -351,7 +351,7 @@ In this application, models are created using SQLAlchemy, they reflect the entit
 
 ### UserRole model
 
-The `UserRole` model is associated with the `roles` table in the database. The relationship with `User` model is one-to-many relationship. 
+The `UserRole` model is associated with the `roles` table in the database. The relationship with `User` model is one-to-many relationship. One role can be assigned to zero or many users, but one user can only have one and only one role. 
 
 The association is established using the below code:
 
@@ -369,7 +369,7 @@ In `user.py`:
 role = db.relationship('UserRole', back_populates='users')
 ```
 
-Schemas are nested to represent the relationship between objects. The reason to use nesting schemas here is because a user can either be admin, tourist or tour guide, therefore, we want to see the user role when a user is returned in the response. Nesting schemas are defined to represent this relationship as below:
+Schemas are nested to represent the relationship between objects. The reason to nest `UserRoleSchema` in `UserSchema` because a user can either be admin, tourist or tour guide, therefore, we want to see the user role when a user is returned in the response. Nesting schemas are defined to represent this relationship as below:
 
 
 In `role.py`, `role` is excluded to prevent circular references.
@@ -378,7 +378,7 @@ In `role.py`, `role` is excluded to prevent circular references.
 users = fields.List(fields.Nested('UserSchema', exclude=['role']))
 ```
 
-In `user.py`, we only need the `name` attribute when nested in the user object.
+In `user.py`(under `UserSchema`), we only need the `name` attribute of roles when nested in a user object.
 
 ```
 role = fields.Nested('UserRoleSchema', only=['name'])
@@ -401,7 +401,7 @@ role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
 
 **Relationship with Tour model**
 
-This relationship is one-to-many relationship. `user_id` in `Tour` model is the foreign key, referencing the `id` of the `User` model and it is not nullable, because a tour must belong to a user (a user with tour guide role, to be more specific).
+This relationship is one-to-many relationship. One user can have zero or many tours but one tour only belong to one and only one user. `user_id` in `Tour` model is the foreign key, referencing the `id` of the `User` model and it is not nullable, because a tour must belong to a user (a user with the role of tour guide, to be more specific).
 
 In `tour.py`:
 
@@ -423,15 +423,15 @@ In `tour.py`:
 user = db.relationship('User', back_populates='tours')
 ```
 
-`TourSchema` is nested in `UserSchema` for when a user (specifically a tour guide) is returned in the response, their tours are stored in a list that nested in the user object. Nesting schemas are defined to represent this relationship as below:
+`TourSchema` is nested in `UserSchema` for when a user (a tour guide in particular) is returned in the response, their tours are stored in a list that nested in the user object. `UserSchema` is also nested in `TourSchema` but not in a list because one tour should only belong to one user. Nesting schemas are defined to represent this relationship as below:
 
-In `user.py`, `user` is excluded to prevent circular references.
+In `user.py` (under `UserSchema`), `user` is excluded to prevent circular references.
 
 ```
 tours = fields.List(fields.Nested('TourSchema', exclude=['user']))
 ```
 
-In `tour.py`, we only need `username`, `email` and `role` attributes of the tour guide user to show up in the nested list of tours.
+In `tour.py` (under `TourSchema`), we only need `username`, `email` and `role` attributes of the tour guide user to show up in the nested user of a tour object.
 
 ```
 user = fields.Nested('UserSchema', only=['username', 'email', 'role'])
@@ -439,7 +439,7 @@ user = fields.Nested('UserSchema', only=['username', 'email', 'role'])
 
 **Relationship with TourBooking model**
 
-This relationship is one-to-many relationship. `user_id` in `TourBooking` model is the foreign key, referencing the `id` of the `User` model and it is not nullable, because a tour booking must belong to a user (a user with tourist role, to be more specific).
+This relationship is one-to-many relationship. One user can have zero or many tour bookings but one tour booking only belong to one and only one user. `user_id` in `TourBooking` model is the foreign key, referencing the `id` of the `User` model and it is not nullable, because a tour booking must belong to a user (a user with the role of tourist, to be more specific).
 
 In `tour_booking.py`:
 
@@ -449,7 +449,7 @@ user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
 The association is established using the below code:
 
-In `user.py`, there is no `cascade='all,delete` constraint of `tour_bookings` in `user.py` as a feature of the application is assumed that a user cannot be deleted if there is still a existing tour booking linked to them. This associated tour booking needs to be deleted (or cancelled) for the user to be removed. 
+In `user.py`, there is no `cascade='all,delete` constraint of `tour_bookings` in `user.py` because it is assumed as a feature of the application that a user cannot be deleted if there is still a existing tour booking linked to them. This associated tour booking needs to be deleted (or cancelled) for the user to be removed. 
 
 ```
 tour_bookings = db.relationship('TourBooking', back_populates='user')
@@ -461,15 +461,15 @@ In `tour_booking.py`:
 user = db.relationship('User', back_populates='tour_bookings')
 ```
 
-`TourBookingSchema` is nested in `UserSchema` for when a user (specifically a tourist) is returned in the response, their tour bookings are stored in a list that nested in the user object. Nesting schemas are defined to represent this relationship as below:
+`TourBookingSchema` is nested in `UserSchema` for when a user (a tourist in particular) is returned in the response, their tour bookings are stored in a list that nested in the user object. `UserSchema` is also nested in `TourBookingSchema` but not in a list because one tour booking should only belong to one user. Nesting schemas are defined to represent this relationship as below:
 
-In `user.py`, `user` is excluded to prevent circular references.
+In `user.py` (under `UserSchema`), `user` is excluded to prevent circular references.
 
 ```
 tour_bookings = fields.List(fields.Nested('TourBookingSchema', exclude=['user']))
 ```
 
-In `tour.py`, we only need `username`, `email` and `role` attributes of the tourist user to show up in the nested list of tour bookings.
+In `tour_booking.py` (under `TourBookingSchema`), we only need `username`, `email` and `role` attributes of the tourist user to show up in the nested list of tour bookings.
 
 ```
 user = fields.Nested('UserSchema', only=['username', 'email', 'role'])
@@ -477,7 +477,7 @@ user = fields.Nested('UserSchema', only=['username', 'email', 'role'])
 
 **Relationship with Review model**
 
-This relationship is one-to-many relationship. `user_id` in `Review` model is the foreign key, referencing the `id` of the `User` model and it is not nullable, because a review must belong to a user (this application assumes that only tourist can write reviews).
+This relationship is one-to-many relationship. One user can have many reviews but one review can only belong to one and only one user. `user_id` in `Review` model is the foreign key, referencing the `id` of the `User` model and it is not nullable, because a review must belong to a user (this application assumes that only tourist can write reviews).
 
 In `review.py`:
 
@@ -498,10 +498,99 @@ In `review.py`:
 user = db.relationship('User', back_populates='reviews')
 ```
 
-`UserSchema` is nested in `ReviewSchema` for when a review (specifically a tourist) is returned in the response, the info of user who wrote the review is nested in the review object. There is unnecessary for `ReviewSchema` to be nested in `UserSchema`.
+`UserSchema` is nested in `ReviewSchema` for when a review (a tourist in particular) is returned in the response, the info of user who wrote the review is nested in the review object. There is unnecessary for `ReviewSchema` to be nested in `UserSchema`.
 
-In `review.py`, the `user` variable defines the nesting `UserSchema` within `ReviewSchema`. Only two attributed `username` and `role` needed to show up in the review object to tell who is the review owner. 
+In `review.py` (under `ReviewSchema`), the `user` variable defines the nesting `UserSchema` within `ReviewSchema`. Only two attributes of users `username` and `role` needed to show up in the review object to tell who is the review owner. 
 
 ```
 user = fields.Nested('UserSchema', only=['username', 'role'])
 ```
+
+### Tour model and TourBooking model
+
+The one-to-many relationship between `User` and `Tour` has been discussed above. From a different perspective, we can essentially say that the relationship between `Tour` and `User` can be a many-to-many relationship. In that case, the `TourBooking` is the model that joins `Tour` and `User`.
+
+The relationship between `Tour` and `TourBooking` model is one-to-many relationship. One tour can have many or zero booking but one booking must belong to one and only one tour. `tour_id` in `TourBooking` model is the foreign key, referencing the `id` of the `Tour` model and it is not nullable, because a booking must belong to a tour.
+
+In `tour_booking.py`:
+
+```
+tour_id = db.Column(db.Integer, db.ForeignKey('tours.id'), nullable=False)
+```
+
+The association is established using the below code:
+
+In `tour.py`, there is no `cascade='all,delete` constraint of `tour_bookings` in `tour.py` because it is assumed as a feature of the application that a tour cannot be deleted if there is still a existing tour booking linked to it. This associated tour booking needs to be deleted (or cancelled) for the tour to be deleted.
+
+```
+tour_bookings = db.relationship('TourBooking', back_populates='tour')
+```
+
+In `tour_booking.py`:
+
+```
+tour = db.relationship('Tour', back_populates='tour_bookings')
+```
+
+`TourBookingSchema` is nested in `TourSchema` for when a tour is returned in the response, the associated tour bookings are stored in a list that nested in the tour object. This nesting schema is only returned in a limited scenarios where an admin retrieves tours or a tour guide retrieves their own tours with full information. Generally, when unauthorized users like website visitors or general tourists want to view all tours or one tour, `tour_bookings` will be excluded in `TourSchema` because a tour booking is not supposed to be explicitly viewed. 
+
+`TourSchema` is also nested in `TourBookingSchema` but not in a list because one tour booking should only belong to one tour. 
+
+Nesting schemas are defined to represent this relationship as below:
+
+In `tour.py`, `tour` is excluded to prevent circular references.
+
+```
+tour_bookings = fields.List(fields.Nested("TourBookingSchema", exclude=["tour"]))
+```
+
+In `tour_booking.py`, we only need two attributes of tours to show up in the nested tour in a tour booking object: `tour_name` and `user`. Here, `user` is the tour guide who owns the tour, and the info of user will be nested in one more layer with only three attributes belong to the user, namely `name`, `role`, `email`. 
+
+```
+tour = fields.Nested('TourSchema', only=['user', 'tour_name'])
+```
+
+### Review Model
+
+The one-to-many relationship between `User` and `Review` has been discussed above. Similarly, from a different perspective, we can say that the relationship between `Review` and `User` is many-to-many relationship. And `Tour` is the model that joins the two models `Review` and `User`. 
+
+We will now discuss the relationship between `Review` and `Tour`. In this application, it is assumed that tourists are the reviewers and tours are the object to be reviewed. This relationship is one-to-many, a tour can have many reviews but one review can only belong to one tour. `tour_id` in `Review` model is the foreign key, referencing the `id` of the `Tour` model and it is not nullable, because a review must belong to a tour.
+
+In `review.py`:
+
+```
+tour_id = db.Column(db.Integer, db.ForeignKey('tours.id'), nullable=False)
+```
+
+The association is established using the below code:
+
+In `tour.py`, there is `cascade='all,delete` constraint of `reviews` in `tour.py` because a review must associated to a tour, it means that once a tour is deleted, all associated reviews will also be deleted.
+
+```
+reviews = db.relationship('Review', back_populates='tour', cascade='all, delete')
+```
+
+In `review.py`:
+
+```
+tour = db.relationship('Tour', back_populates='reviews')
+```
+
+`ReviewSchema` is nested in `TourSchema` for when a tour is returned in the response, the associated reviews are stored in a list that nested in the tour object. That is because when a tour is retrieved, it is reasonable to show all of reviews about that tour. `TourSchema` is also nested in `ReviewSchema` but not in a list because one review should only belong to one tour. 
+
+Nesting schemas are defined to represent this relationship as below:
+
+In `tour.py` (under `TourSchema`), `tour` is excluded to prevent circular references.
+
+```
+reviews = fields.List(fields.Nested('ReviewSchema', exclude=['tour']))
+```
+
+In `review.py` (under `ReviewSchema`), we only need two attributes of tours to show up in the nested tour in the review object: `tour_name` and `user`. Here, `user` is the tour guide who owns the tour that being reviewed.
+
+```
+tour = fields.Nested('TourSchema', only=['tour_name', 'user'])
+```
+
+<br>
+
