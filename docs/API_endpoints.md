@@ -435,7 +435,7 @@ Once the related tour booking is deleted, the result is returned as below:
 - Method: GET
 - Argument: `user_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Request body: None
 - Response body:
 ```
@@ -470,7 +470,7 @@ Once the related tour booking is deleted, the result is returned as below:
 - Method: PUT, PATCH
 - Argument: `user_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Data validation:
     - `f_name` and `l_name` must have at least 2 characters and must only contain letters and space
     - `dob` must be in date format of `dd-mm-yy`
@@ -528,7 +528,7 @@ Once the related tour booking is deleted, the result is returned as below:
 - Method: GET
 - Argument: `user_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Request body: None
 - Response body:
 ```
@@ -585,7 +585,7 @@ Once the related tour booking is deleted, the result is returned as below:
 
 ## Tour Guide Routes 
 
-### Get all tour guides (limited info access)
+### Get all tour guides (limited info access) - All users
 
 **/tourguides**
 
@@ -665,7 +665,7 @@ Once the related tour booking is deleted, the result is returned as below:
 ]
 ```
 
-### Get one tour guide (limited info access) - DONE
+### Get one tour guide (limited info access) - All users
 
 **/tourguides/<user_id>**
 
@@ -713,7 +713,7 @@ Once the related tour booking is deleted, the result is returned as below:
 }
 ```
 
-### Get one tour guide (full info access) - Account owner only - DONE
+### Get one tour guide (full info access) - Account owner only 
 
 **/tourguides/<user_id>**
 
@@ -721,7 +721,7 @@ Once the related tour booking is deleted, the result is returned as below:
 - Method: GET
 - Argument: `user_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Request body: None
 - Response body:
 ```
@@ -771,7 +771,7 @@ Once the related tour booking is deleted, the result is returned as below:
 - Method: PUT, PATCH
 - Argument: `user_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Request body:
 
 ```
@@ -813,7 +813,7 @@ Once the related tour booking is deleted, the result is returned as below:
 }
 ```
 
-### Get a tourist account (limited info access) - Tour guide used only and only can retrieve a tourist who has booked their tour
+### Get a tourist account (limited info access) - Tour guide used only and only applied to a tourist who has booked their tour
 
 **/tourguides/<tourguide_id>/<tourist_id>**
 
@@ -821,7 +821,7 @@ Once the related tour booking is deleted, the result is returned as below:
 - Method: GET
 - Argument: `tourguide_id` and `tourist_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identuty`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Request body: None
 - Response body:
 ```
@@ -842,11 +842,19 @@ Once the related tour booking is deleted, the result is returned as below:
 	"username": "daniel.neal"
 }
 ```
-If the tour guide who requests is not authorized, the result is returned as below:
+If we try the route `localhost:8080/tourguides/5/2`, the tour guide with id=5 is not authorized, the result is returned as below:
 
 ```
 {
 	"error": "Unauthorized to view tourist account with id 2."
+}
+```
+
+If we try the route `localhost:8080/tourguides/4/3`, the tourist with id=3 does not have a booking with the tour guide with id=4 who is currently logged in, the result is returned as below:
+
+```
+{
+	"error": "User not found with id 3."
 }
 ```
 ### Get a tour guide's all tours with full booking info - Tour owner only
@@ -857,7 +865,7 @@ If the tour guide who requests is not authorized, the result is returned as belo
 - Method: GET
 - Argument: `user_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Request body: None
 - Response body:
 
@@ -937,7 +945,7 @@ If the tour guide who requests is not authorized, the result is returned as belo
 ```
 
 
-### Get a tour guide's all bookings - Related tour guide only
+### Get a tour guide's all bookings - Tour owner only
 
 **/tourguides/<user_id>/tourbookings**
 
@@ -945,7 +953,7 @@ If the tour guide who requests is not authorized, the result is returned as belo
 - Method: GET
 - Argument: `user_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Request body: None
 - Response body:
 
@@ -1109,9 +1117,9 @@ If the tour guide who requests is not authorized, the result is returned as belo
 
 ### Get all tours without private bookings info - All visitors and users
 
-**/tours**
+**/tours/**
 
-- Path example: `localhost:8080/tours`
+- Path example: `localhost:8080/tours/`
 - Method: GET
 - Argument: None
 - Authentication: None
@@ -1280,7 +1288,7 @@ If the tour guide who requests is not authorized, the result is returned as belo
 - Method: PUT, PATCH
 - Argument: `id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Request body:
 ```
 {
@@ -1327,7 +1335,7 @@ If the tour guide who requests is not authorized, the result is returned as belo
 - Method: DELETE
 - Argument: `id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 
 **Note**: can not delete if tour is booked with an existing booking ID. Only can delete if related booking has been deleted.
 
@@ -1428,6 +1436,13 @@ If a tour is unavailable, when creating a booking using this path `localhost:808
 	"error": "Tour not found with id 6."
 }
 ```
+**Note**: The tour cannot be booked again if the tourist already has an existing booking with the tour. The result will be returned as below:
+
+```
+{
+	"error": "You have existing booking with tour of id 1."
+}
+```
 
 ### Get a tour booking - Booking owner and related tour guide only
 
@@ -1437,7 +1452,7 @@ If a tour is unavailable, when creating a booking using this path `localhost:808
 - Method: GET
 - Argument: `tour_id` and `booking_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Request body: None
 - Response body:
 
@@ -1475,7 +1490,7 @@ If a tour is unavailable, when creating a booking using this path `localhost:808
 - Method: PUT, PATCH
 - Argument: `tour_id` and `booking_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Request body:
 ```
 {
@@ -1519,7 +1534,7 @@ If a tour is unavailable, when creating a booking using this path `localhost:808
 - Method: DELETE
 - Argument: `tour_id` and `booking_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Request body: None
 - Response body:
 ```
@@ -1531,7 +1546,7 @@ If a tour is unavailable, when creating a booking using this path `localhost:808
 
 ## Review Routes
 
-### Create a review - Tourist used only and only applied for tourist who has booked the tour
+### Create a review - Tourist used only and only applied to tourists who have booked the tour
 
 **/tours/<tour_id>/reviews/**
 
@@ -1539,7 +1554,7 @@ If a tour is unavailable, when creating a booking using this path `localhost:808
 - Method: POST
 - Argument: `tour_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Data validation:
 	- `rating` : must be a valid integer from 1 to 5
 	- `message` : must be longer than 5 characters
@@ -1592,7 +1607,7 @@ If the user who is currently logged in has never booked the tour, when sending t
 - Method: PUT, PATCH
 - Argument: `tour_id` and `review_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Request body:
 ```
 {
@@ -1628,13 +1643,13 @@ If the user who is currently logged in has never booked the tour, when sending t
 
 ### Delete a review - Review owner and Admin only
 
-**/reviews/<review_id>**
+**tours/<tour_id>/reviews/<review_id>**
 
 - Path example: `localhost:8080/tours/2/reviews/1`
 - Method: DELETE
 - Argument: `tour_id` and `review_id` as Integer
 - Authentication: Bearer Token upon login
-- Authorization: `get_jwt_identity`
+- Authorization: `get_jwt_identity` (`user_id` = `users.id`)
 - Request body: None
 - Response result:
 ```
