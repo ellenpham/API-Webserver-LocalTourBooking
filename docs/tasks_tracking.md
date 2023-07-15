@@ -13,7 +13,7 @@ There are three main tasks in the development process:
 - Create project management plan using Trello.
 - Brainstorm application ideas
 - Identify the problem and the reasons for solving the problem
-- Create a rough design of ERD. 
+- Create a rough design of ERD (R6)
 - Write user stories
 - Write an outline of CRUD functionalities for each entity in the database
 - Write an outline API endpoints
@@ -43,15 +43,16 @@ See the below screenshots of tasks tracking on Trello for Phase 1 (Day 1 to Day 
 ### Subtasks of Code Writing and Testing
 
 - Write an outline of file arrangements in the source code
-- Initial environment setup includes creating virtual environment, app initialization and configuration,installation of required dependencies, creating PostgresSQL database and creating Git repository.
+- Initial environment setup includes creating virtual environment, app initialization and configuration,installation of required dependencies, creating PostgresSQL database and creating Git repository
 - Test the landing page
-- Make sure each feature is created off a different feature branch, merge the feature branch to main branch each time one feature is done. 
-- Create models and schemas, CLI commands and controllers for routes.
-- Perform API test with Insomnia every time a route is created.
-- Implement data validation and error handling in all possible scenarios.
-- Implement authorization on relevant routes based on functionality requirements.
-- Perform test throughout the development process.
-- API endpoints are being documented alongside with code writing and testing
+- Make sure each feature is created off a different feature branch, merge the feature branch to main branch each time one feature is done.
+- Create models and schemas, CLI commands and controllers for routes
+- Perform API test with Insomnia every time a route is created
+- Implement data validation and error handling in all possible scenarios
+- Implement authorization on relevant routes based on functionality requirements
+- Perform test throughout the development process
+- Code comments are added along the way
+- API endpoints (R5) are being documented alongside with code writing and testing
 
 See the below screenshots of tasks tracking on Trello for Phase 2 (Day 6 to Day 10):
 
@@ -104,6 +105,13 @@ Rearrange cards in Trello for easier tracking, documentation for API endpoints a
 ![Day15](trello_screenshots/Day15.png)
 
 
+### Subtasks of Documenting
+
+- Complete R4, R7, R8, R9 of the assignment requirements after code is done
+- R10 (tasks tracking) is being documented alongside with every step of the development process
+- Finish up documentation by checking if all rubric requirements are ticked off to some extent. 
+
+![Day16](trello_screenshots/Day16.png)
 
 
 
