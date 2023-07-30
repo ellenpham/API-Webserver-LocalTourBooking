@@ -276,7 +276,7 @@ In your computer, open terminal or command prompt:
 
 - Install the dependencies, using `pip3 install -r requirements.txt`
 
-- In another terminal window, start your PostgresSQL service and run `psql` to access the database management system. Create database in your PostgresSQL by following the configuration in the `.env` folder to set up the database URL and JWT.
+- In another terminal window, start your PostgresSQL service and run `psql` to access the database management system. Set up environment variables and create database in your PostgresSQL by following the configuration in the `.env` folder or provided `config.md` folder to set up the database URL and JWT key. 
 
 - To create the initial database for API testing run the following CLI commands in order: `flask db drop`, `flask db create`, `flask db seed`
 
