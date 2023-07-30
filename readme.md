@@ -321,6 +321,11 @@ Flask is a lightweight WSGI web framework, it is a Python library used to make w
 
 Psycopg2 is used to create the database connection in a Flask app, it is the most common PostgresSQL database adapter for Python programming language. With Psycopg2, Python data types are supported and adapted to match data types in PostgreSQL. Its key features are the complete implementation of the Python DB API 2.0 specifications, especially thread safety. Psycopg2 is both efficient and secure because it was built around libpq, a PostgreSQL client library, which performs the majority of network communications and returns query results in C structures. ([PyPI](https://pypi.org/project/psycopg2/)).
 
+**Python-dotenv** (version 1.0.0)
+
+Python-dotenv is a library that helps read key-value pairs from encrypted `.env` files and set them as environment variables. Normally, your application might need some sensitive or environment specific information to perform certain tasks that you might want to keep in the local machine instead of publicly disclosed on source control system like GitHub. A `.env` file is used to store those information. To read the `.env` files, every programming language has a different package or library and `Python-dotenv` is the option for Python applications ([DEV Community](https://dev.to/jakewitcher/using-env-files-for-environment-variables-in-python-applications-55a1)).
+
+
 **SQLAlchemy** (version 2.0.18)
 
 SQLAlchemy is a Python SQL toolkit and an Object Relational Mapper (ORM). It provides developers the full power and flexibility to access database access in relational databases. SQLAlchemy as an ORM is used to make queries and handle data using simple Python objects and methods. In this application, Flask-SQLAlchemy (version 3.0.5) is also installed. It is an extension for Flask, which provides methods and tools to interact with database in Flask apps through SQLAlchemy. It simplifies the use of SQLAlchemy with Flask by setting up objects and patterns to use those objects such as sessions tied to web requests, models and engines ([DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-use-flask-sqlalchemy-to-interact-with-databases-in-a-flask-application), [Flask-SQLAlchemy documentation](https://flask-sqlalchemy.palletsprojects.com/en/3.0.x/)).
